@@ -146,10 +146,9 @@ def preprocess_opts(parser):
     # Dictionary options, for text corpus
 
     group = parser.add_argument_group('Vocab')
-    group.add_argument('-src_vocab',
-                       help="Path to an existing source vocabulary")
-    group.add_argument('-tgt_vocab',
-                       help="Path to an existing target vocabulary")
+    group.add_argument('-vocab',
+                       help="Path to an existing vocabulary",
+                       default=None)
     group.add_argument('-features_vocabs_prefix', type=str, default='',
                        help="Path prefix to existing features vocabularies")
     group.add_argument('-src_vocab_size', type=int, default=50000,

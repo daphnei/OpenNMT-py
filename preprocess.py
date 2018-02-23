@@ -155,12 +155,20 @@ def build_save_dataset(corpus_type, fields, opt):
 
 
 def build_save_vocab(train_dataset, fields, opt):
-    fields = onmt.io.build_vocab(train_dataset, fields, opt.data_type,
-                                 opt.share_vocab,
-                                 opt.src_vocab_size,
-                                 opt.src_words_min_frequency,
-                                 opt.tgt_vocab_size,
-                                 opt.tgt_words_min_frequency)
+    if opt.vocab:
+        # Uses the vocab size and min frequency specified for the src
+        fields = onmt.io.build_vocab_from_existing_file(
+                                fields,
+                                opt.vocab,
+                                opt.src_words_min_frequency,
+                                opt.src_vocab_size)
+    else:
+        fields = onmt.io.build_vocab(train_dataset, fields, opt.data_type,
+                                     opt.share_vocab,
+                                     opt.src_vocab_size,
+                                     opt.src_words_min_frequency,
+                                     opt.tgt_vocab_size,
+                                     opt.tgt_words_min_frequency)
 
     # Can't save fields, so remove/reconstruct at training time.
     vocab_file = opt.save_data + '.vocab.pt'

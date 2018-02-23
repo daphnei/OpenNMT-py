@@ -224,6 +224,35 @@ def _build_field_vocab(field, counter, **kwargs):
     field.vocab = field.vocab_cls(counter, specials=specials, **kwargs)
 
 
+def build_vocab_from_existing_file(
+        fields, vocab_path, words_min_frequency, vocab_size):
+    """
+    Creates a joint vocab for source and target using the specified vocab file.
+
+    Args:
+        fields (dict): fields to build vocab for.
+        vocab_path: (string) points to a tsv file with word\tfrequency 
+        words_min_frequency(int): the minimum frequency needed to
+                include a target word in the vocabulary.
+        vocab_size(int): size of the vocabulary.
+    """
+
+    vocab_dict = {}
+    with open(vocab_path) as f:
+      for line in f:
+        word, count = line.strip().split('\t')
+        vocab_dict[word] = count
+
+    counter = Counter(vocab_dict)
+    _build_field_vocab(fields["tgt"], counter,
+                       max_size=vocab_size,
+                       min_freq=words_min_frequency)
+    fields['src'].vocab = fields['tgt'].vocab
+
+    print(" * vocab size: %d." % len(fields["tgt"].vocab))
+    return fields
+    
+
 def build_vocab(train_dataset_files, fields, data_type, share_vocab,
                 src_vocab_size, src_words_min_frequency,
                 tgt_vocab_size, tgt_words_min_frequency):
